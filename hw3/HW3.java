@@ -4,12 +4,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 
 public class HW3 {
@@ -28,10 +28,7 @@ public class HW3 {
         String filename = "headlines.txt";
         int c = 0;
         PrintWriter outputStream = new PrintWriter(new FileOutputStream(new File(filename),
-                true /*check if file exist and append*/));
-
-        String content = new String(Files.readAllBytes(Paths.get("headlines.txt")));
-        System.out.println(content);
+                true /* append = true */));
 
         outputStream.println("        News       " + new Date());
         outputStream.println("-----------------------------------");
@@ -45,7 +42,39 @@ public class HW3 {
                 break;
             }
         }
+
+        FileReader fileReader = new FileReader(filename);
+        // Always wrap FileReader in BufferedReader.
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line = null;
+        c = 0;
+        String fileT = "";
+        while ((line = bufferedReader.readLine()) != null) {
+            String file = line;
+            // System.out.println(file);
+            fileT += file;
+        }
+
+        for (Element headline : doc.select("div.headline > a[href]")) {
+            c++;
+            if (!fileT.toLowerCase().contains(headline.text().toLowerCase())){
+
+                System.out.println("New headline: " + headline.text());
+            } else {
+
+                System.out.println("Old Headline: " + headline.text());
+            }
+
+            if (c == 10) {
+                break;
+            }
+
+           
+        }
+
         outputStream.close();
+        // Always close files.
+        bufferedReader.close();
 
     }
 }
